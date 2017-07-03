@@ -1806,8 +1806,18 @@ lunr.Index.prototype.query = function (fn) {
          * building the query vector.
          */
         var expandedTerm = expandedTerms[j],
-            posting = this.invertedIndex[expandedTerm],
-            termIndex = posting._index
+            posting = this.invertedIndex[expandedTerm]
+
+        /*
+         * If the expanded term is not in the inverted index, then continue
+         * through the for-loop. This avoids an exception being thrown in
+         * Safari for some queries.
+         */
+        if (!posting) {
+          continue
+        }
+
+        var termIndex = posting._index
 
         for (var k = 0; k < clause.fields.length; k++) {
           /*
